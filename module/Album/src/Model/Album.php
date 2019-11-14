@@ -10,6 +10,7 @@ use Zend\InputFilter\InputFilterAwareInterface;
 use Zend\InputFilter\InputFilterInterface;
 use Zend\Validator\StringLength;
 use Zend\Validator\Date;
+use Zend\Validator\GreaterThan;
 
 class Album implements InputFilterAwareInterface
 {
@@ -17,6 +18,7 @@ class Album implements InputFilterAwareInterface
     public $artist;
     public $title;
     public $date;
+    public $age;
 
     private $inputFilter;
 
@@ -27,6 +29,7 @@ class Album implements InputFilterAwareInterface
         $this->artist = !empty($data['artist']) ? $data['artist'] : null;
         $this->title = !empty($data['title']) ? $data['title'] : null;
         $this->date = !empty($data['date']) ? $data['date'] : null;
+        $this->age = !empty($data['age']) ? $data['age'] : null;
     }
 
     // album getter
@@ -37,6 +40,7 @@ class Album implements InputFilterAwareInterface
             'artist' => $this->artist,
             'title' => $this->title,
             'date' => $this->date,
+            'age' => $this->age,
         ];
     }
 
@@ -108,6 +112,23 @@ class Album implements InputFilterAwareInterface
             'validators' => [
                 [
                     'name' => Date::class,
+                ],
+            ],
+        ]);
+
+        $inputFilter->add([
+            'name' => 'age',
+            'required' => true,
+            'filters' => [
+                ['name' => ToInt::class],
+            ],
+            'validators' => [
+                [
+                    'name' => GreaterThan::class,
+                    'options' => [
+                        'inclusive' => true,
+                        'min' => 0,
+                    ],
                 ],
             ],
         ]);

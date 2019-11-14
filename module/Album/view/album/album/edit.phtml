@@ -17,6 +17,10 @@ $artist->setAttribute('placeholder', 'Artist');
 $date = $form->get('date');
 $date->setAttribute('class', 'form-control');
 
+$age = $form->get('age');
+$age->setAttribute('class', 'form-control');
+$age->setAttribute('placeholder', '0');
+
 $submit = $form->get('submit');
 $submit->setAttribute('class', 'btn btn-primary');
 
@@ -44,7 +48,28 @@ echo $this->form()->openTag($form);
         <?= $this->formElementErrors()->render($date, ['class' => 'help-block']) ?>
     </div>
 
+    <div class="form-group">
+        <?= $this->formLabel($age) ?>
+        <?= $this->formElement($age) ?>
+        <?= $this->formElementErrors()->render($age, ['class' => 'help-block']) ?>
+    </div>
+
 <?php
 echo $this->formHidden($form->get('id'));
 echo $this->formSubmit($submit);
 echo $this->form()->closeTag();
+?>
+
+<script>
+    $("input[name='date']").blur(function(){
+        var el = this;
+        var date = $(el).val();
+
+        if(date != "") {
+            date = new Date(date);
+            var today = new Date();
+            var age = Math.floor((today-date) / (365.25 * 24 * 60 * 60 * 1000));
+            $("input[name='age']").val(age);
+        }
+    });
+</script>
