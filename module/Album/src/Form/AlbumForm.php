@@ -33,6 +33,14 @@ class AlbumForm extends Form
         ]);
 
         $this->add([
+            'name' => 'date',
+            'type' => 'date',
+            'options' => [
+                'label' => 'Release Date',
+            ],
+        ]);
+
+        $this->add([
             'name' => 'submit',
             'type' => 'submit',
             'attributes' => [
