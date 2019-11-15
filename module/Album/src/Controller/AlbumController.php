@@ -1,11 +1,13 @@
 <?php
 namespace Album\Controller;
 
+use Zend\Db\Sql\Delete;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 use Album\Model\AlbumTable;
 use Album\Form\AlbumForm;
 use Album\Model\Album;
+use Album\Form\DeleteAlbumForm;
 
 class AlbumController extends AbstractActionController
 {
@@ -90,21 +92,26 @@ class AlbumController extends AbstractActionController
             return $this->redirect()->toRoute('album');
         }
 
+        $form = new DeleteAlbumForm();
+
         $request = $this->getRequest();
-        if($request->isPost()) {
-            $del = $request->getPost('del', 'No');
+        $viewData = ['id' => $id, 'form' => $form, 'album' => $this->table->getAlbum($id)];
 
-            if($del == 'Yes') {
-                $id = (int) $request->getPost('id');
-                $this->table->deleteAlbum($id);
-            }
-
-            return $this->redirect()->toRoute('album');
+        if(!$request->isPost()) {
+            return $viewData;
         }
 
-        return [
-            'id' => $id,
-            'album' => $this->table->getAlbum($id),
-        ];
+        $album = new Album();
+        $form->setInputFilter($album->getInputFilter());
+        $form->setData($request->getPost());
+
+        $del = $form->get('del')->getValue();
+
+        if($del == 'Yes') {
+              $y_id = $form->get('id')->getValue();
+              $this->table->deleteAlbum($id);
+        }
+
+        return $this->redirect()->toRoute('album');
     }
 }

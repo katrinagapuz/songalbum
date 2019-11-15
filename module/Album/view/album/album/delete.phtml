@@ -1,8 +1,5 @@
 <?php
-
 $title = 'Delete album';
-$url = $this->url('album', ['action' => 'delete', 'id' => $id]);
-
 $this->headTitle($title);
 ?>
 
@@ -14,10 +11,24 @@ $this->headTitle($title);
     "<?= $this->escapeHtml($album->artist) ?>"?
 </p>
 
-<form action="<?= $url ?>" method="POST">
-    <div class="form-group">
-        <input type="hidden" name="id" value="<?= (int) $album->id ?>" />
-        <input type="submit" class="btn btn-danger" name="del" value="Yes" />
-        <input type="submit" class="btn btn-success" name="del" value="No" />
-    </div>
-</form>
+<?php
+$form->setAttribute('action', $this->url('album', ['action' => 'delete', 'id' => $id]));
+$form->prepare();
+
+echo $this->form()->openTag($form);
+
+$album_id = $form->get('id');
+$album_id->setValue($album->id);
+echo $this->formHidden($form->get('id'));
+
+$del = $form->get('del');
+$del->setAttribute('class', 'btn btn-danger');
+$del->setValue('Yes');
+echo $this->formSubmit($del);
+
+$del = $form->get('del');
+$del->setAttribute('class', 'btn btn-success');
+$del->setValue('No');
+echo $this->formSubmit($del);
+echo $this->form()->closeTag();
+?>
