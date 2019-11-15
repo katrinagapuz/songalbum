@@ -7,7 +7,7 @@ use Zend\View\Model\ViewModel;
 use Album\Model\AlbumTable;
 use Album\Form\AlbumForm;
 use Album\Model\Album;
-use Album\Form\DeleteAlbumForm;
+use Zend\Http\Response;
 
 class AlbumController extends AbstractActionController
 {
@@ -88,30 +88,21 @@ class AlbumController extends AbstractActionController
     public function deleteAction()
     {
         $id = (int) $this->params()->fromRoute('id', 0);
+
+        $response = $this->getResponse();
+
         if(!$id) {
-            return $this->redirect()->toRoute('album');
+            $response->setContent(\Zend\Json\Json::encode(array('response' => false)));
         }
 
-        $form = new DeleteAlbumForm();
-
-        $request = $this->getRequest();
-        $viewData = ['id' => $id, 'form' => $form, 'album' => $this->table->getAlbum($id)];
-
-        if(!$request->isPost()) {
-            return $viewData;
+        try {
+            $album = $this->table->getAlbum($id);
+        } catch (\Exception $e) {
+            $response->setContent(\Zend\Json\Json::encode(array('response' => false)));
         }
 
-        $album = new Album();
-        $form->setInputFilter($album->getInputFilter());
-        $form->setData($request->getPost());
-
-        $del = $form->get('del')->getValue();
-
-        if($del == 'Yes') {
-              $y_id = $form->get('id')->getValue();
-              $this->table->deleteAlbum($id);
-        }
-
-        return $this->redirect()->toRoute('album');
+        $this->table->deleteAlbum($id);
+        $response->setContent(\Zend\Json\Json::encode(array('response' => true)));
+        return $response;
     }
 }

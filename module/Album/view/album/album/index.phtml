@@ -23,8 +23,27 @@ $this->headTitle($title);
             <td><?= $this->escapeHtml($album->date) ?></td>
             <td>
                 <a href="<?= $this->url('album', ['action' => 'edit', 'id' => $album->id]) ?>">Edit</a>
-                <a href="<?= $this->url('album', ['action' => 'delete', 'id' => $album->id]) ?>">Delete</a>
+                <button class="del" id="<?php echo $album->id; ?>">Delete</button>
             </td>
         </tr>
     <?php endforeach; ?>
 </table>
+
+<script>
+    $(document).ready(function() {
+        $('.del').click(function(event){
+            //event.preventDefault();
+            var el = this;
+            var id = this.id;
+
+            $.post('album/delete/' + id, {},
+                function(data) {
+                    if(data.response == true) {
+                         $(el).closest('tr').fadeOut(300, function(){
+                             $(this).remove();
+                         });
+                    }
+                }, 'json');
+        });
+    });
+</script>
